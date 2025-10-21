@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Sistema de Inventario Educativo (SIE)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('imagen 4-Photoroom.png') no-repeat center center/cover;
+      filter: brightness(0.45);
+      z-index: -1;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.93);
+      border-radius: 15px;
+      padding: 40px 35px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      text-align: center;
+      margin: 100px auto;
+    }
+
+    .login-container img {
+      width: 140px;
+      margin-bottom: 15px;
+    }
+
+    .login-container h2 {
+      color: #ff6600;
+      margin-bottom: 5px;
+      font-size: 26px;
+    }
+
+    .login-container p {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0 15px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ff6600;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #e65c00;
+    }
+
+    #inventario {
+      display: none;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #ff6600;
+      color: white;
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+    }
+
+    .header-image {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      margin-right: 20px;
+      border-radius: 50%;
+      background-color: white;
+      padding: 5px;
+    }
+
+    .header-title {
+      flex: 1;
+      text-align: center;
+      font-size: 26px;
+      font-weight: bold;
+    }
+
+    .table-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #ff6600;
+      color: white;
+    }
+
+    .item-img {
+      width: 90px;
+      height: 70px;
+      object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    footer {
+      text-align: center;
+      padding: 10px;
+      background: #ff6600;
+      color: white;
+      margin-top: 40px;
+    }
+
+    #logoutBtn {
+      background-color: crimson;
+      margin-top: 20px;
+      width: auto;
+      padding: 10px 20px;
+      border-radius: 6px;
+    }
+
+    #logoutBtn:hover {
+      background-color: darkred;
+    }
+
+    .crud-buttons button {
+      width: auto;
+      padding: 8px 12px;
+      margin: 2px;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+
+    .edit { background-color: #007bff; }
+    .edit:hover { background-color: #0062cc; }
+    .delete { background-color: #dc3545; }
+    .delete:hover { background-color: #b02a37; }
+
+    #formCrear input {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-container" id="login">
+  <img src="imagen 4-Photoroom.png" alt="Logo SIE">
+  <h2>Bienvenido al SIE</h2>
+  <p>Sistema de Inventario Educativo</p>
+  <input type="text" id="usuario" placeholder="Usuario" required>
+  <input type="password" id="clave" placeholder="Contraseña" required>
+  <button onclick="validarLogin()">Iniciar Sesión</button>
+  <p>¿No tienes una cuenta? Contáctanos al <strong>+57 3133167644</strong></p>
+</div>
+
+<div id="inventario">
+  <header>
+    <img class="header-image" src="imagen 4-Photoroom.png" alt="Logo">
+    <div class="header-title">Sistema de Inventario Educativo (SIE)</div>
+  </header>
+
+  <div class="table-container">
+    <h2>Inventario General</h2>
+
+    <div id="formCrear" style="margin-bottom:20px; display:none;">
+      <input type="text" id="articulo" placeholder="Artículo">
+      <input type="text" id="categoria" placeholder="Categoría">
+      <input type="number" id="cantidad" placeholder="Cantidad">
+      <input type="text" id="estado" placeholder="Estado">
+      <input type="text" id="imagen" placeholder="Ruta o URL de imagen">
+      <button onclick="crearItem()">Agregar</button>
+    </div>
+
+    <table id="tablaInventario">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Imagen</th>
+          <th>Artículo</th>
+          <th>Categoría</th>
+          <th>Cantidad</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div style="text-align:center;">
+      <button id="logoutBtn" onclick="cerrarSesion()">Salir</button>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Sistema de Inventario Educativo (SIE)
+  </footer>
+</div>
+
+<script>
+  let rol = "";
+  let inventario = [];
+
+  if (localStorage.getItem("inventarioSIE")) {
+    inventario = JSON.parse(localStorage.getItem("inventarioSIE"));
+  } else {
+    inventario = [
+      { id: 1, imagen: "Desktop_computer_clipart_-_Yellow_theme.svg.png", articulo: "Computadora portátil", categoria: "Electrónica", cantidad: 15, estado: "Bueno" },
+      { id: 2, imagen: "images.jpg", articulo: "Proyector Epson", categoria: "Electrónica", cantidad: 5, estado: "Regular" },
+      { id: 3, imagen: "download.jpg", articulo: "Libros de Matemáticas", categoria: "Biblioteca", cantidad: 40, estado: "Bueno" },
+      { id: 4, imagen: "imagen 2.jpg", articulo: "Sillas escolares", categoria: "Mobiliario", cantidad: 100, estado: "Bueno" }
+    ];
+    guardarEnLocalStorage();
+  }
+
+  function guardarEnLocalStorage() {
+    localStorage.setItem("inventarioSIE", JSON.stringify(inventario));
+  }
+
+  function validarLogin() {
+    const usuario = document.getElementById('usuario').value.toLowerCase();
+    const clave = document.getElementById('clave').value;
+
+    if (usuario === 'admin' && clave === '1234') {
+      rol = 'admin';
+      iniciarSistema("Bienvenido, Administrador.", true);
+    } else if (usuario === 'profesor' && clave === '4321') {
+      rol = 'profesor';
+      iniciarSistema("Has iniciado sesión como Profesor (solo lectura y eliminación parcial).", false);
+    } else {
+      alert('Usuario o contraseña incorrectos');
+    }
+  }
+
+  function iniciarSistema(mensaje, puedeCrear) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('inventario').style.display = 'block';
+    alert(mensaje);
+    if (puedeCrear) document.getElementById('formCrear').style.display = 'block';
+    mostrarInventario();
+  }
+
+  function mostrarInventario() {
+    const tbody = document.querySelector("#tablaInventario tbody");
+    tbody.innerHTML = "";
+
+    inventario.forEach(item => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${item.id}</td>
+        <td><img src="${item.imagen}" alt="${item.articulo}" class="item-img"></td>
+        <td>${item.articulo}</td>
+        <td>${item.categoria}</td>
+        <td>${item.cantidad}</td>
+        <td>${item.estado}</td>
+        <td class="crud-buttons">
+          ${rol === 'admin' ? `<button class="edit" onclick="editarItem(${item.id})">Editar</button>` : ''}
+          <button class="delete" onclick="eliminarItem(${item.id})">Eliminar</button>
+        </td>
+      `;
+      tbody.appendChild(fila);
+    });
+  }
+
+  function crearItem() {
+    const articulo = document.getElementById('articulo').value;
+    const categoria = document.getElementById('categoria').value;
+    const cantidad = parseInt(document.getElementById('cantidad').value);
+    const estado = document.getElementById('estado').value;
+    const imagen = document.getElementById('imagen').value;
+
+    if (articulo && categoria && cantidad && estado && imagen) {
+      const nuevo = { id: inventario.length + 1, imagen, articulo, categoria, cantidad, estado };
+      inventario.push(nuevo);
+      guardarEnLocalStorage();
+      mostrarInventario();
+
+      document.getElementById('articulo').value = "";
+      document.getElementById('categoria').value = "";
+      document.getElementById('cantidad').value = "";
+      document.getElementById('estado').value = "";
+      document.getElementById('imagen').value = "";
+    } else {
+      alert("Por favor, completa todos los campos.");
+    }
+  }
+
+  function editarItem(id) {
+    if (rol !== 'admin') {
+      alert("Solo el administrador puede editar.");
+      return;
+    }
+
+    const item = inventario.find(i => i.id === id);
+    const nuevoArticulo = prompt("Editar nombre:", item.articulo);
+    const nuevaCategoria = prompt("Editar categoría:", item.categoria);
+    const nuevaCantidad = prompt("Editar cantidad:", item.cantidad);
+    const nuevoEstado = prompt("Editar estado:", item.estado);
+    const nuevaImagen = prompt("Editar ruta/imagen:", item.imagen);
+
+    if (nuevoArticulo && nuevaCategoria && nuevaCantidad && nuevoEstado && nuevaImagen) {
+      item.articulo = nuevoArticulo;
+      item.categoria = nuevaCategoria;
+      item.cantidad = parseInt(nuevaCantidad);
+      item.estado = nuevoEstado;
+      item.imagen = nuevaImagen;
+      guardarEnLocalStorage();
+      mostrarInventario();
+    }
+  }
+
+  function eliminarItem(id) {
+    const item = inventario.find(i => i.id === id);
+
+    if (rol === 'profesor') {
+      const cantidadEliminar = parseInt(prompt(`¿Cuántas unidades deseas eliminar de "${item.articulo}"? (Disponibles: ${item.cantidad})`));
+      if (!cantidadEliminar || cantidadEliminar <= 0) return;
+
+      if (cantidadEliminar >= item.cantidad) {
+        if (confirm("Se eliminará todo el artículo, ¿continuar?")) {
+          inventario = inventario.filter(i => i.id !== id);
+        }
+      } else {
+        item.cantidad -= cantidadEliminar;
+      }
+
+    } else if (rol === 'admin') {
+      if (confirm(`¿Seguro que deseas eliminar el artículo "${item.articulo}" por completo?`)) {
+        inventario = inventario.filter(i => i.id !== id);
+      }
+    }
+
+    guardarEnLocalStorage();
+    mostrarInventario();
+  }
+
+  function cerrarSesion() {
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
